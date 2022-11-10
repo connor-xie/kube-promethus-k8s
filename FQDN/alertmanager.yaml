@@ -1,0 +1,43 @@
+apiVersion: v1
+data: {}
+kind: Secret
+metadata:
+  name: alertmanager-main
+  namespace: monitoring
+stringData:
+  alertmanager.yaml: |-
+    global:
+      resolve_timeout: 5m
+      smtp_smarthost: 'smtp.qq.com:465'
+      smtp_from: '1450930976@qq.com'     # 发件人邮箱
+      smtp_auth_username: '1450930976@qq.com'    # 发件人邮箱
+      smtp_auth_password: 'ixhztpsljhszjhed'  # QQ授权码
+      smtp_hello: 'qq.com'
+      smtp_require_tls: false
+    route:
+      group_by: ['alertname']
+      group_interval: 5m
+      group_wait: 30s
+      receiver: default-receiver
+      repeat_interval: 12h
+      routes:
+      - receiver: 'lms-saas'
+        match_re:
+          namespace: ^(lms-saas|lms-standard).*$    # 根据namespace进行区分报警
+    receivers:
+    - name: 'default-receiver'
+      email_configs:
+      - to: '1450930976@qq.com'      # 收件人邮箱,设置多个收件人
+        send_resolved: true
+      - to: '2480039804@qq.com'
+        send_resolved: true
+    - name: 'lms-saas'                   # 跟上面定义的名字必须一样
+      email_configs:
+      #- to: '1450930976@chinaedu.net'      # 收件人邮箱,也可以设置多个
+      - to: '1450930976@qq.com'      # 收件人邮箱,设置多个收件人
+        send_resolved: true
+      #- to: '1450930976@chinaedu.net'
+      - to: '2480039804@qq.com'
+        send_resolved: true
+type: Opaque
+
